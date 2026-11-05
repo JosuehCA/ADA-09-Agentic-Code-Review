@@ -1,0 +1,1 @@
+"""Customer search application package."""

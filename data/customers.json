@@ -1,0 +1,152 @@
+[
+  {
+    "id": "CUST-001",
+    "first_name": "Carlos",
+    "last_name": "García",
+    "email": "carlos.garcia@example.com"
+  },
+  {
+    "id": "CUST-002",
+    "first_name": "María",
+    "last_name": "Rodríguez",
+    "email": "maria.rodriguez@example.com"
+  },
+  {
+    "id": "CUST-003",
+    "first_name": "José",
+    "last_name": "Hernández",
+    "email": "jose.hernandez@example.com"
+  },
+  {
+    "id": "CUST-004",
+    "first_name": "Ana",
+    "last_name": "Martínez",
+    "email": "ana.martinez@example.com"
+  },
+  {
+    "id": "CUST-005",
+    "first_name": "Juan",
+    "last_name": "López",
+    "email": "juan.lopez@example.com"
+  },
+  {
+    "id": "CUST-006",
+    "first_name": "Sofía",
+    "last_name": "González",
+    "email": "sofia.gonzalez@example.com"
+  },
+  {
+    "id": "CUST-007",
+    "first_name": "David",
+    "last_name": "Pérez",
+    "email": "david.perez@example.com"
+  },
+  {
+    "id": "CUST-008",
+    "first_name": "Lucía",
+    "last_name": "Sánchez",
+    "email": "lucia.sanchez@example.com"
+  },
+  {
+    "id": "CUST-009",
+    "first_name": "Mateo",
+    "last_name": "Ramírez",
+    "email": "mateo.ramirez@example.com"
+  },
+  {
+    "id": "CUST-010",
+    "first_name": "Elena",
+    "last_name": "Torres",
+    "email": "elena.torres@example.com"
+  },
+  {
+    "id": "CUST-011",
+    "first_name": "Alejandro",
+    "last_name": "Flores",
+    "email": "alejandro.flores@example.com"
+  },
+  {
+    "id": "CUST-012",
+    "first_name": "Camila",
+    "last_name": "Díaz",
+    "email": "camila.diaz@example.com"
+  },
+  {
+    "id": "CUST-013",
+    "first_name": "Diego",
+    "last_name": "Vásquez",
+    "email": "diego.vasquez@example.com"
+  },
+  {
+    "id": "CUST-014",
+    "first_name": "Valentina",
+    "last_name": "Castro",
+    "email": "valentina.castro@example.com"
+  },
+  {
+    "id": "CUST-015",
+    "first_name": "Gabriel",
+    "last_name": "Morales",
+    "email": "gabriel.morales@example.com"
+  },
+  {
+    "id": "CUST-016",
+    "first_name": "Isabella",
+    "last_name": "Ortiz",
+    "email": "isabella.ortiz@example.com"
+  },
+  {
+    "id": "CUST-017",
+    "first_name": "Lucas",
+    "last_name": "Gutiérrez",
+    "email": "lucas.gutierrez@example.com"
+  },
+  {
+    "id": "CUST-018",
+    "first_name": "Martina",
+    "last_name": "Chávez",
+    "email": "martina.chavez@example.com"
+  },
+  {
+    "id": "CUST-019",
+    "first_name": "Joaquín",
+    "last_name": "Ramos",
+    "email": "joaquin.ramos@example.com"
+  },
+  {
+    "id": "CUST-020",
+    "first_name": "Valeria",
+    "last_name": "Reyes",
+    "email": "valeria.reyes@example.com"
+  },
+  {
+    "id": "CUST-021",
+    "first_name": "Daniel",
+    "last_name": "Jiménez",
+    "email": "daniel.jimenez@example.com"
+  },
+  {
+    "id": "CUST-022",
+    "first_name": "Mariana",
+    "last_name": "Silva",
+    "email": "mariana.silva@example.com"
+  },
+  {
+    "id": "CUST-023",
+    "first_name": "Nicolás",
+    "last_name": "Mendoza",
+    "email": "nicolas.mendoza@example.com"
+  },
+  {
+    "id": "CUST-024",
+    "first_name": "Andrea",
+    "last_name": "Ruiz",
+    "email": "andrea.ruiz@example.com"
+  },
+  {
+    "id": "CUST-025",
+    "first_name": "Samuel",
+    "last_name": "Peña",
+    "email": "samuel.pena@example.com"
+  }
+]
