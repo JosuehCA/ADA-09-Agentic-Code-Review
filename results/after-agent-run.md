@@ -31,8 +31,11 @@ Baseline commit/tag: `ada08-baseline` (`5464dda`)
 - Output:
   ```text
   [1/3] Running tests
-  75 passed in 0.22s
+  ........................................................................ [ 96%]
+  ...                                                                      [100%]
+  75 passed in 0.23s
   [2/3] Running lint
+  All checks passed!
   [3/3] Repository checks
   REPO_CONTRACT: PASS
   VERIFY_REPO: PASS

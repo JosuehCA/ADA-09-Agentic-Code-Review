@@ -22,10 +22,10 @@
 - `data/` - Static fixture datasets (`customers.json`).
 
 ## Standard Commands
-- Install: `pip install pytest flake8`
+- Install: `pip install pytest ruff`
 - Run: `python -m src.cli "<query>"`
 - Test: `pytest -q`
-- Lint: `flake8 src tests --max-line-length=130 --ignore=W391`
+- Lint: `ruff check .`
 - Verify: `./scripts/verify_repo.sh`
 
 ## Change Rules

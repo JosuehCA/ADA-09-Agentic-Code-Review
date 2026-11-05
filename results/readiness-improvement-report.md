@@ -38,7 +38,7 @@ This report analyzes the transformation of the Customer Search codebase from a t
 - **Category**: Context & Operational Contract
 - **Problem**: `AGENTS.md` only had 25 lines of generic rules with no commands, stop conditions, or explicit sources of truth.
 - **Change**: Upgraded `AGENTS.md` to include Read First sequence, Sources of Truth hierarchy, Repository Map, Standard Commands, Change Rules, Stop Conditions, and verifiable Definition of Done.
-- **Evidence**: `AGENTS.md` now specifies exact commands: `pytest -q`, `flake8 src tests --max-line-length=130 --ignore=W391`, and `./scripts/verify_repo.sh`.
+- **Evidence**: `AGENTS.md` now specifies exact commands: `pytest -q`, `ruff check .`, and `./scripts/verify_repo.sh`.
 
 ### Improvement I-03
 - **Category**: Executable Knowledge
@@ -92,7 +92,7 @@ Aparece el riesgo de **divergencia y desincronización de fuentes de verdad** (S
 ### 8. ¿Qué checks comparten ahora el agente, el desarrollador humano y CI?
 Comparten exactamente el mismo contrato ejecutable: **`./scripts/verify_repo.sh`**, el cual ejecuta de forma idéntica en los tres entornos:
 1. Suite de pruebas unitarias e integración (`pytest -q`).
-2. Linter estático de código (`flake8 src tests`).
+2. Linter estático de código (`ruff check .`).
 3. Verificación de integridad de contrato de repositorio (`python scripts/check_repo_contract.py`).
 
 ### 9. ¿Qué parte del proceso sigue requiriendo decisión humana?
