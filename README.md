@@ -142,9 +142,23 @@ pytest tests/test_performance.py -v
 
 ## Documentation & Traceability
 
-- [REQUIREMENTS.md](REQUIREMENTS.md): Functional and non-functional requirements.
-- [SPEC.md](SPEC.md): Technical specification, business rules, and acceptance criteria.
-- [ARCHITECTURE.md](ARCHITECTURE.md): Component responsibilities, data flow, and interfaces.
+### Core Specifications & Architecture
+- [AGENTS.md](AGENTS.md): Operational contract, standard commands, and multi-agent workflow rules.
+- [REQUIREMENTS.md](REQUIREMENTS.md): Functional and non-functional customer search requirements.
+- [SPEC.md](SPEC.md): Technical specification, domain rules, and verifiable acceptance criteria.
+- [ARCHITECTURE.md](ARCHITECTURE.md): Component responsibilities, layered architecture, data flow, and interfaces.
 - [TASKS.md](TASKS.md): Step-by-step implementation tasks.
+- [docs/REPO_MAP.md](docs/REPO_MAP.md): Repository structure, entry points, architectural boundaries, and change guide.
 - [docs/traceability.md](docs/traceability.md): Requirements to tests traceability matrix.
-- [results/agent-report.md](results/agent-report.md): Execution summary, problem resolutions, and review logs.
+- [AI_USAGE_LOG.md](AI_USAGE_LOG.md): Full chronological log of AI interactions, student decisions, and workflow stages.
+
+### Change Request & Agentic Review Artifacts (`results/`)
+- [CHANGE_REQUEST.md](CHANGE_REQUEST.md): Approved change request specification for CR-01 (Customer ID search).
+- [results/PR_EVIDENCE.md](results/PR_EVIDENCE.md): Consolidated PR evidence, verification summary, and final merge recommendation.
+- [results/coder-report.md](results/coder-report.md): Coder agent implementation plan, changed files, and fix cycle details.
+- [results/verification-report.md](results/verification-report.md): Automated test, linter, and repository contract execution evidence.
+- [results/review-contract.md](results/review-contract.md): Scope, boundaries, and severity thresholds for independent review.
+- [results/review-report.md](results/review-report.md): Initial independent code review report, findings, and evidence.
+- [results/human-review-decisions.md](results/human-review-decisions.md): Authoritative human reviewer evaluations and severity decisions.
+- [results/re-review-report.md](results/re-review-report.md): Independent re-review report confirming resolution of findings and 0 regressions.
+- [results/run-context.md](results/run-context.md): Runtime environment, platform details, and commit baseline.
