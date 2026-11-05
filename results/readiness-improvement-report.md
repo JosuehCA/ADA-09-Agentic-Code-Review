@@ -60,7 +60,7 @@ This report analyzes the transformation of the Customer Search codebase from a t
 
 ---
 
-## Individual Reflection (Section 26)
+## Reflexión individual
 
 ### 1. ¿Cuál fue el principal obstáculo para el agente en la ejecución BEFORE?
 El principal obstáculo fue la **falta de discoverability operativa**. Aunque el código funcional de ADA-05 era correcto y los tests existían, no había ningún comando unificado ni mapa del repositorio. El agente tuvo que inferir cómo ejecutar las pruebas, adivinar qué linter utilizar (intentando `ruff` que no estaba instalado) y descifrar la estructura navegando a ciegas entre directorios.
