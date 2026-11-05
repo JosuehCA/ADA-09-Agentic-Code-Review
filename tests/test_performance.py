@@ -47,6 +47,7 @@ def test_performance_end_to_end_query_under_300ms(thousand_records_dataset: Path
         "García",               # Exact match on last_name
         "Carlos García",        # Multi-word match on full_name
         "perf.user0500",        # Partial email match
+        "PERF-0500",            # Exact match on customer id
         "NonexistentRecord",    # Empty-state query
     ]
 

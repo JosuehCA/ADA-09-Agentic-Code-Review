@@ -73,14 +73,19 @@ class CustomerSearchService:
         partial_matches: list[Customer] = []
 
         for customer in customers:
+            norm_id = self.normalize(customer.id)
             norm_first = self.normalize(customer.first_name)
             norm_last = self.normalize(customer.last_name)
             norm_full = self.normalize(customer.full_name)
             norm_email = self.normalize(customer.email)
 
-            if normalized_query in (norm_first, norm_last, norm_full, norm_email):
+            if normalized_query in (norm_id, norm_first, norm_last, norm_full, norm_email):
                 exact_matches.append(customer)
-            elif normalized_query in norm_full or normalized_query in norm_email:
+            elif (
+                normalized_query in norm_id
+                or normalized_query in norm_full
+                or normalized_query in norm_email
+            ):
                 partial_matches.append(customer)
 
         # Deterministic tie-breaking: sort ascending alphabetically by last_name, then first_name, then id

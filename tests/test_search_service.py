@@ -113,6 +113,47 @@ def test_search_matches_email(sample_customers: list[Customer]) -> None:
     assert len(results_domain) == len(sample_customers)
 
 
+def test_search_matches_customer_id_exact() -> None:
+    """Matches query against customer ID exactly (case-insensitive)."""
+    customers = [
+        Customer(id="CUST-001", first_name="Carlos", last_name="García", email="carlos.garcia@example.com"),
+        Customer(id="CUST-002", first_name="María", last_name="Rodríguez", email="maria.r@example.com"),
+    ]
+    repo = InMemoryCustomerRepository(customers)
+    service = CustomerSearchService(repo)
+
+    # Exact query matching customer ID
+    results = service.search("CUST-001")
+    assert len(results) == 1
+    assert results[0].id == "CUST-001"
+
+    # Case-insensitive exact matching
+    results_lower = service.search("cust-001")
+    assert len(results_lower) == 1
+    assert results_lower[0].id == "CUST-001"
+
+
+def test_search_matches_customer_id_partial() -> None:
+    """Matches query against customer ID substring in partial tier."""
+    customers = [
+        Customer(id="CUST-001", first_name="Carlos", last_name="García", email="carlos.garcia@example.com"),
+        Customer(id="CUST-002", first_name="María", last_name="Rodríguez", email="maria.r@example.com"),
+        Customer(id="USER-999", first_name="John", last_name="Doe", email="jdoe@example.com"),
+    ]
+    repo = InMemoryCustomerRepository(customers)
+    service = CustomerSearchService(repo)
+
+    # Substring match on numeric ID portion
+    results = service.search("001")
+    assert len(results) == 1
+    assert results[0].id == "CUST-001"
+
+    # Substring match on prefix portion
+    results_prefix = service.search("CUST")
+    assert len(results_prefix) == 2
+    assert {c.id for c in results_prefix} == {"CUST-001", "CUST-002"}
+
+
 def test_search_diacritic_and_case_insensitive(sample_customers: list[Customer]) -> None:
     """Queries match regardless of casing or diacritic differences."""
     repo = InMemoryCustomerRepository(sample_customers)
@@ -184,6 +225,58 @@ def test_ranking_tie_breaking_order() -> None:
     # 2. Bob Smith (id=5) -> sorted after Alice Smith
     results_smith = service.search("Smith")
     assert [c.id for c in results_smith] == ["4", "7", "5"]
+
+
+def test_ranking_exact_id_matches_precede_partial_matches() -> None:
+    """Exact customer ID match strictly precedes partial matches."""
+    customers = [
+        Customer(id="CUST-0010", first_name="Bob", last_name="Brown", email="bob@example.com"),
+        Customer(id="CUST-001", first_name="Alice", last_name="Smith", email="alice@example.com"),
+        Customer(id="CUST-002", first_name="CUST-001-Nick", last_name="Davis", email="davis@example.com"),
+    ]
+    repo = InMemoryCustomerRepository(customers)
+    service = CustomerSearchService(repo)
+
+    # Searching "CUST-001":
+    # - Customer CUST-001: exact match on id
+    # - Customer CUST-0010: partial match on id ("CUST-001" in "CUST-0010")
+    # - Customer CUST-002: partial match on full_name ("CUST-001" in "CUST-001-Nick Davis")
+    results = service.search("CUST-001")
+    assert len(results) == 3
+    assert results[0].id == "CUST-001"  # Exact match tier
+    assert {results[1].id, results[2].id} == {"CUST-0010", "CUST-002"}  # Partial match tier
+
+
+def test_ranking_exact_name_precedes_partial_id_match() -> None:
+    """Exact name match strictly precedes partial ID match."""
+    customers = [
+        Customer(id="CUST-100", first_name="Alice", last_name="Smith", email="alice@example.com"),
+        Customer(id="OTHER-99", first_name="Cust", last_name="Jones", email="cust@example.com"),
+    ]
+    repo = InMemoryCustomerRepository(customers)
+    service = CustomerSearchService(repo)
+
+    # Searching "Cust":
+    # - OTHER-99: exact match on first_name ("Cust")
+    # - CUST-100: partial match on id ("Cust" in "CUST-100")
+    results = service.search("Cust")
+    assert len(results) == 2
+    assert results[0].id == "OTHER-99"
+    assert results[1].id == "CUST-100"
+
+
+def test_ranking_id_partial_matches_tie_breaking() -> None:
+    """Partial ID matches resolve ties by last_name, first_name, then id."""
+    customers = [
+        Customer(id="CUST-901", first_name="Zachary", last_name="Adams", email="z.adams@example.com"),
+        Customer(id="CUST-902", first_name="Abigail", last_name="Adams", email="a.adams@example.com"),
+        Customer(id="CUST-903", first_name="Bob", last_name="Baker", email="b.baker@example.com"),
+    ]
+    repo = InMemoryCustomerRepository(customers)
+    service = CustomerSearchService(repo)
+
+    results = service.search("CUST")
+    assert [c.id for c in results] == ["CUST-902", "CUST-901", "CUST-903"]
 
 
 # ============================================================================
