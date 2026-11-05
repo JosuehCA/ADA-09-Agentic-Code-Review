@@ -41,7 +41,7 @@ class CLI:
         """
         parser = argparse.ArgumentParser(
             prog="python -m src.cli",
-            description="Search customers by first name, last name, or email.",
+            description="Search customers by first name, last name, email, or customer ID.",
         )
         parser.add_argument("query", help="Search term (minimum 3 non-whitespace characters)")
 

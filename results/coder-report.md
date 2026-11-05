@@ -67,4 +67,30 @@ AC-01
 [x] No undocumented dependency/API introduced
 [x] Ready for independent review
 
+## Fix Cycle
+
+### Addressed Findings from Human Review (results/human-review-decisions.md)
+- **RF-01 (MUST FIX - ACCEPTED)**: Regenerated `results/verification-report.md` with accurate environment data (`Python 3.12.7`) and referenced implementation commit `94d770d`.
+- **RF-02 (SHOULD FIX - MODIFIED)**: Updated `docs/traceability.md` to explicitly link customer ID search requirements under FR-01, FR-02, FR-06, and NFR-03 (with CR-01), mapping all newly added test functions.
+- **RF-03 (MUST FIX - MODIFIED)**: In `tests/test_search_service.py` (`test_ranking_exact_id_matches_precede_partial_matches`), replaced the set assertion with an exact ordered assertion: `assert [c.id for c in results] == ["CUST-001", "CUST-0010", "CUST-002"]`.
+- **RF-04 (SHOULD FIX - ACCEPTED)**: Added `test_cli_search_by_partial_customer_id` in `tests/test_cli.py` verifying that searching a partial customer ID substring (`"001"`) outputs formatted customer records to stdout and exits with code 0.
+- **RF-05 (MUST FIX - MODIFIED)**: Added `test_capping_partial_id_matches_limits_to_twenty` in `tests/test_search_service.py` verifying that a partial ID query matching >20 records caps at exactly 20 records in deterministic sorted order.
+- **RF-06 (SHOULD FIX - ACCEPTED)**: Updated `src/cli.py` argparse description to `"Search customers by first name, last name, email, or customer ID."` and added customer ID search examples (exact and partial) to `README.md`.
+
+### Files Modified in Fix Cycle
+- `src/cli.py`
+- `tests/test_search_service.py`
+- `tests/test_cli.py`
+- `README.md`
+- `docs/traceability.md`
+- `results/verification-report.md`
+- `results/coder-report.md`
+
+### Verification Evidence
+- Verification Command: `./scripts/verify_repo.sh`
+- Exit Code: `0`
+- Tests: 84 passed in 0.32s
+- Lint: All checks passed!
+- Repo Contract: REPO_CONTRACT: PASS, VERIFY_REPO: PASS
+
 This report is NOT an approval.

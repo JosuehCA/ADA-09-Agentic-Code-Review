@@ -243,8 +243,7 @@ def test_ranking_exact_id_matches_precede_partial_matches() -> None:
     # - Customer CUST-002: partial match on full_name ("CUST-001" in "CUST-001-Nick Davis")
     results = service.search("CUST-001")
     assert len(results) == 3
-    assert results[0].id == "CUST-001"  # Exact match tier
-    assert {results[1].id, results[2].id} == {"CUST-0010", "CUST-002"}  # Partial match tier
+    assert [c.id for c in results] == ["CUST-001", "CUST-0010", "CUST-002"]
 
 
 def test_ranking_exact_name_precedes_partial_id_match() -> None:
@@ -325,6 +324,28 @@ def test_capping_exact_matches_prioritized_in_capping() -> None:
     # Exactly 5 partial matches should fill the remainder
     returned_partial_count = sum(1 for c in results if c.id.startswith("partial_"))
     assert returned_partial_count == 5
+
+
+def test_capping_partial_id_matches_limits_to_twenty() -> None:
+    """When more than 20 records match partially on customer ID, exactly 20 records are returned in sorted order."""
+    # 25 customers all having IDs starting with "CUST-" with distinct last names to verify sorting
+    customers = [
+        Customer(
+            id=f"CUST-{i:03d}",
+            first_name=f"First{i:02d}",
+            last_name=f"Last{25 - i:02d}",  # reverse order to test sorting
+            email=f"user{i:02d}@example.com",
+        )
+        for i in range(1, 26)
+    ]
+    repo = InMemoryCustomerRepository(customers)
+    service = CustomerSearchService(repo)
+
+    results = service.search("CUST")
+    assert len(results) == 20
+    # Verify records are sorted by last_name ascending
+    last_names = [c.last_name for c in results]
+    assert last_names == sorted(last_names)
 
 
 # ============================================================================

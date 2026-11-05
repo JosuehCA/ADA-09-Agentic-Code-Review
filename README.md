@@ -75,13 +75,25 @@ python -m src.cli "<query>"
    # Displays up to 20 matching records with example.com email addresses
    ```
 
-5. **Zero Matches State (Exit Code 0)**:
+5. **Customer ID Search (Exact & Partial)**:
+   Search matching supports exact and partial customer IDs:
+   ```bash
+   # Exact customer ID match
+   python -m src.cli "CUST-001"
+   # Output: [CUST-001] Carlos García - carlos.garcia@example.com
+
+   # Partial customer ID match
+   python -m src.cli "001"
+   # Output: [CUST-001] Carlos García - carlos.garcia@example.com
+   ```
+
+6. **Zero Matches State (Exit Code 0)**:
    ```bash
    python -m src.cli "NonexistentUser"
    # Output: No customers found matching 'NonexistentUser'.
    ```
 
-6. **Input Validation Errors (Exit Code 2)**:
+7. **Input Validation Errors (Exit Code 2)**:
    - Query too short (< 3 non-whitespace characters):
      ```bash
      python -m src.cli "ab"

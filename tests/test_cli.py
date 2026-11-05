@@ -89,6 +89,18 @@ def test_cli_search_by_customer_id(sample_service: CustomerSearchService) -> Non
     assert err.getvalue() == ""
 
 
+def test_cli_search_by_partial_customer_id(sample_service: CustomerSearchService) -> None:
+    """CLI searches by customer ID substring and outputs matching records (RF-04)."""
+    out, err = io.StringIO(), io.StringIO()
+    cli = CLI(service=sample_service, stdout=out, stderr=err)
+
+    exit_code = cli.run(["001"])
+
+    assert exit_code == 0
+    assert "[CUST-001] Carlos García - carlos.garcia@example.com" in out.getvalue()
+    assert err.getvalue() == ""
+
+
 def test_cli_empty_matches_returns_zero_and_prints_eh03_message(sample_service: CustomerSearchService) -> None:
     """CLI prints EH-03 empty-state message to stdout and exits with code 0 (AC-04)."""
     out, err = io.StringIO(), io.StringIO()
