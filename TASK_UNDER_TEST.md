@@ -18,3 +18,4 @@ Add customer ID matching to `CustomerSearchService.search` so that searching for
 - Use REQUIREMENTS.md and SPEC.md as the source of truth.
 - Keep changes scoped to this task.
 - Do not redefine requirements in this file.
+

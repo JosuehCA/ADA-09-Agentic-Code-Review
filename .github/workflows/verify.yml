@@ -14,3 +14,4 @@ jobs:
           python-version: "3.12"
       - run: pip install pytest flake8
       - run: ./scripts/verify_repo.sh
+

@@ -39,3 +39,4 @@ Should this remain implicit?
 NO
 Where should it become explicit?
 `scripts/verify_repo.sh` and `AGENTS.md`.
+

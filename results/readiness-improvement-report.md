@@ -120,3 +120,4 @@ La variabilidad estocástica y temperatura inherente del modelo de lenguaje, o s
 2. El archivo de navegación **`docs/REPO_MAP.md`** con la guía de cambios por capa.
 3. El script de verificación única **`scripts/verify_repo.sh`** compartido con CI.
 4. El script determinista de contrato **`scripts/check_repo_contract.py`** como guardrail infalible.
+

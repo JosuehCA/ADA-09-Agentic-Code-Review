@@ -15,3 +15,4 @@ echo "[3/3] Repository checks"
 python scripts/check_repo_contract.py
 
 echo "VERIFY_REPO: PASS"
+

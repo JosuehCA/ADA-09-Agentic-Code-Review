@@ -13,3 +13,4 @@ When verifying:
 3. Report modified files, executed commands, and verification evidence.
 
 Do not duplicate project requirements here.
+

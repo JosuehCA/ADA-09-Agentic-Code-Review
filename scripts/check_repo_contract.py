@@ -36,3 +36,4 @@ if not Path("data/customers.json").exists():
 
 print("REPO_CONTRACT: PASS")
 sys.exit(0)
+

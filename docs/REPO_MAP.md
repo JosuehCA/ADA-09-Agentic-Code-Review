@@ -25,3 +25,4 @@ If changing search behavior or adding business rules:
 - `REQUIREMENTS.md` & `SPEC.md` - Normative sources of truth. Never modify requirements solely to make code or tests pass.
 - `docs/traceability.md` - Update only when intentionally modifying requirement/acceptance criterion test coverage.
 - `.github/` - CI workflows and configuration.
+
