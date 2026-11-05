@@ -1,0 +1,344 @@
+diff --git a/CHANGE_REQUEST.md b/CHANGE_REQUEST.md
+new file mode 100644
+index 0000000..54d8737
+--- /dev/null
++++ b/CHANGE_REQUEST.md
+@@ -0,0 +1,28 @@
++# Change Request
++
++Change ID: CR-01
++
++## Goal
++Add customer ID matching to `CustomerSearchService.search` so that searching for a customer ID (exact or partial) returns the corresponding customer record, ranking exact ID matches in the exact tier and partial ID matches in the partial tier, while respecting existing tie-breaking, normalization, and result-capping rules.
++
++## Requirements Covered
++- FR-01
++- AC-01
++
++## Constraints
++- Follow AGENTS.md.
++- Use REQUIREMENTS.md and SPEC.md as the source of truth.
++- Preserve architecture boundaries (`CLI -> SearchService -> Repository`).
++- Do not weaken or delete existing tests.
++- Do not modify `data/customers.json` or add external dependencies.
++
++## Verification
++- An exact query matching a customer ID (e.g., `"CUST-001"`) returns the matching customer in the exact match tier.
++- A partial query matching a customer ID substring (e.g., `"001"`) returns the matching customer in the partial match tier.
++- All existing tests in the suite pass with `./scripts/verify_repo.sh`.
++- New automated tests in `tests/test_search_service.py` demonstrate ID search and ranking correctness.
++
++## Human Approval
++Approved to implement: YES
++Approved by: Josueh C. (Human Reviewer)
++Date: 2026-11-05
+diff --git a/results/coder-report.md b/results/coder-report.md
+new file mode 100644
+index 0000000..d80c749
+--- /dev/null
++++ b/results/coder-report.md
+@@ -0,0 +1,70 @@
++# Coder Agent Report
++
++## Change
++Change ID: CR-01
++Branch: ada09/cr-id-search
++Base commit: 3662558
++
++## Requirements Covered
++FR-01
++AC-01
++
++## Implementation Plan
++1. Inspect the domain search service `CustomerSearchService.search` in `src/search_service.py`.
++2. Add normalization of `customer.id` (`norm_id = self.normalize(customer.id)`) alongside name and email fields.
++3. Include `norm_id` in the exact match condition (`normalized_query in (norm_id, norm_first, norm_last, norm_full, norm_email)`).
++4. Include `norm_id` in the partial match condition (`normalized_query in norm_id or normalized_query in norm_full or normalized_query in norm_email`).
++5. Ensure existing ranking tiers, tie-breaking (`last_name`, `first_name`, `id`), and 20-record capping remain intact.
++6. Add comprehensive unit and integration tests covering exact and partial ID matching, case insensitivity, ranking tiers (exact ID match preceding partial matches, exact name match preceding partial ID match), and tie-breaking in `tests/test_search_service.py` and `tests/test_cli.py`.
++7. Verify all existing and new tests pass, linter passes, and repo contract checks pass via `./scripts/verify_repo.sh`.
++
++## Files Changed
++- `src/search_service.py`: Added `norm_id = self.normalize(customer.id)` and evaluated `norm_id` in exact match check and partial match check.
++- `tests/test_search_service.py`: Added unit tests for exact ID matching, partial ID matching, ranking precedence, and tie-breaking.
++- `tests/test_cli.py`: Added CLI unit test and subprocess integration test verifying customer ID search.
++- `tests/test_performance.py`: Added customer ID query to latency benchmark suite.
++
++## Tests Added / Updated
++- `tests/test_search_service.py`:
++  - `test_search_matches_customer_id_exact`: Verifies exact query matching against customer ID, including case insensitivity.
++  - `test_search_matches_customer_id_partial`: Verifies partial substring matching against customer ID in the partial tier.
++  - `test_ranking_exact_id_matches_precede_partial_matches`: Verifies exact ID matches strictly precede partial matches.
++  - `test_ranking_exact_name_precedes_partial_id_match`: Verifies exact name matches strictly precede partial ID matches.
++  - `test_ranking_id_partial_matches_tie_breaking`: Verifies deterministic tie-breaking among ID matches by `last_name`, `first_name`, then `id`.
++- `tests/test_cli.py`:
++  - `test_cli_search_by_customer_id`: Verifies CLI handler execution and output formatting when searching by customer ID.
++  - `test_subprocess_cli_search_by_id`: Verifies end-to-end CLI subprocess search by customer ID against default fixture dataset.
++- `tests/test_performance.py`:
++  - `test_performance_end_to_end_query_under_300ms`: Updated query list to include customer ID match (`"PERF-0500"`).
++
++## Commands Executed
++- `./scripts/verify_repo.sh`
++- `git status`
++- `git diff src/search_service.py`
++- `git diff tests/test_search_service.py`
++- `git diff tests/test_cli.py`
++- `git diff tests/test_performance.py`
++
++## Verification Result
++- Command: `./scripts/verify_repo.sh`
++- Exit Code: `0`
++- Output:
++  - pytest: 82 passed in ~0.28s
++  - ruff check: All checks passed!
++  - repo checks: REPO_CONTRACT: PASS, VERIFY_REPO: PASS
++
++## Assumptions
++- Customer ID format conforms to allowed whitelist characters (alphanumeric and symbols like `-`).
++- Exact matching on customer ID is case-insensitive following existing normalization rules (NFD + lowercasing).
++- Minimum query length constraint (VR-01, >= 3 non-whitespace characters) applies equally to customer ID searches.
++
++## Known Limitations
++- Customer ID search requires a minimum of 3 characters as mandated by VR-01. Customer IDs shorter than 3 characters cannot be searched in isolation.
++
++## Self-Check
++[x] Scope respected
++[x] Existing tests not weakened
++[x] No undocumented dependency/API introduced
++[x] Ready for independent review
++
++This report is NOT an approval.
+diff --git a/results/run-context.md b/results/run-context.md
+new file mode 100644
+index 0000000..8305171
+--- /dev/null
++++ b/results/run-context.md
+@@ -0,0 +1,15 @@
++# Run Context — ADA-09
++
++## Environment
++- Branch: `ada09/cr-id-search`
++- Base Commit: `3662558` (`chore: added one more core change to be kept for final project`)
++- Date: 2026-11-05
++- Python Version: 3.12+
++- Platform: macOS
++
++## Change Context
++- Change ID: `CR-01`
++- Feature: Customer ID search matching and ranking in `CustomerSearchService`
++- Normative Documents: `REQUIREMENTS.md`, `SPEC.md`, `ARCHITECTURE.md`, `AGENTS.md`
++- Verification Command: `./scripts/verify_repo.sh`
++
+diff --git a/results/verification-report.md b/results/verification-report.md
+new file mode 100644
+index 0000000..c6d3f09
+--- /dev/null
++++ b/results/verification-report.md
+@@ -0,0 +1,19 @@
++# Verification Report
++
++## Change CR-01
++
++## Environment
++Python / Node / Java version: Python 3.14.7
++Dependencies: pytest 7.4.4, ruff 0.17.3
++Commit reviewed: e8ee211 (Branch: ada09/cr-id-search, Base: 3662558)
++
++## Checks
++
++| Check | Command | Result | Evidence |
++|---|---|---|---|
++| Tests | `pytest -q` | PASS | 82 passed in 0.29s |
++| Lint | `ruff check .` | PASS | All checks passed! |
++| Repo contract | `python scripts/check_repo_contract.py` | PASS | REPO_CONTRACT: PASS |
++| Security | `pytest tests/test_search_service.py -k "validation"` | PASS | Input length & character whitelist checks passed |
++
++## Overall Gate PASS
+diff --git a/src/search_service.py b/src/search_service.py
+index dc7b594..b5e6ceb 100644
+--- a/src/search_service.py
++++ b/src/search_service.py
+@@ -73,14 +73,19 @@ class CustomerSearchService:
+         partial_matches: list[Customer] = []
+ 
+         for customer in customers:
++            norm_id = self.normalize(customer.id)
+             norm_first = self.normalize(customer.first_name)
+             norm_last = self.normalize(customer.last_name)
+             norm_full = self.normalize(customer.full_name)
+             norm_email = self.normalize(customer.email)
+ 
+-            if normalized_query in (norm_first, norm_last, norm_full, norm_email):
++            if normalized_query in (norm_id, norm_first, norm_last, norm_full, norm_email):
+                 exact_matches.append(customer)
+-            elif normalized_query in norm_full or normalized_query in norm_email:
++            elif (
++                normalized_query in norm_id
++                or normalized_query in norm_full
++                or normalized_query in norm_email
++            ):
+                 partial_matches.append(customer)
+ 
+         # Deterministic tie-breaking: sort ascending alphabetically by last_name, then first_name, then id
+diff --git a/tests/test_cli.py b/tests/test_cli.py
+index bf2d280..2a47798 100644
+--- a/tests/test_cli.py
++++ b/tests/test_cli.py
+@@ -77,6 +77,18 @@ def test_cli_successful_search_returns_zero_and_prints_records(sample_service: C
+     assert err.getvalue() == ""
+ 
+ 
++def test_cli_search_by_customer_id(sample_service: CustomerSearchService) -> None:
++    """CLI searches by customer ID and outputs matching records (CR-01)."""
++    out, err = io.StringIO(), io.StringIO()
++    cli = CLI(service=sample_service, stdout=out, stderr=err)
++
++    exit_code = cli.run(["CUST-001"])
++
++    assert exit_code == 0
++    assert "[CUST-001] Carlos García - carlos.garcia@example.com" in out.getvalue()
++    assert err.getvalue() == ""
++
++
+ def test_cli_empty_matches_returns_zero_and_prints_eh03_message(sample_service: CustomerSearchService) -> None:
+     """CLI prints EH-03 empty-state message to stdout and exits with code 0 (AC-04)."""
+     out, err = io.StringIO(), io.StringIO()
+@@ -183,3 +195,15 @@ def test_subprocess_cli_invalid_characters_error() -> None:
+     )
+     assert result.returncode == 2
+     assert ERROR_INVALID_CHARS in result.stderr
++
++
++def test_subprocess_cli_search_by_id() -> None:
++    """Subprocess execution searching by customer ID exits with 0 and prints results."""
++    result = subprocess.run(
++        [sys.executable, "-m", "src.cli", "CUST-001"],
++        capture_output=True,
++        text=True,
++    )
++    assert result.returncode == 0
++    assert "[CUST-001] Carlos García - carlos.garcia@example.com" in result.stdout
++    assert result.stderr == ""
+diff --git a/tests/test_performance.py b/tests/test_performance.py
+index c412daf..4bfa1b4 100644
+--- a/tests/test_performance.py
++++ b/tests/test_performance.py
+@@ -47,6 +47,7 @@ def test_performance_end_to_end_query_under_300ms(thousand_records_dataset: Path
+         "García",               # Exact match on last_name
+         "Carlos García",        # Multi-word match on full_name
+         "perf.user0500",        # Partial email match
++        "PERF-0500",            # Exact match on customer id
+         "NonexistentRecord",    # Empty-state query
+     ]
+ 
+diff --git a/tests/test_search_service.py b/tests/test_search_service.py
+index c229e5d..27446ae 100644
+--- a/tests/test_search_service.py
++++ b/tests/test_search_service.py
+@@ -113,6 +113,47 @@ def test_search_matches_email(sample_customers: list[Customer]) -> None:
+     assert len(results_domain) == len(sample_customers)
+ 
+ 
++def test_search_matches_customer_id_exact() -> None:
++    """Matches query against customer ID exactly (case-insensitive)."""
++    customers = [
++        Customer(id="CUST-001", first_name="Carlos", last_name="García", email="carlos.garcia@example.com"),
++        Customer(id="CUST-002", first_name="María", last_name="Rodríguez", email="maria.r@example.com"),
++    ]
++    repo = InMemoryCustomerRepository(customers)
++    service = CustomerSearchService(repo)
++
++    # Exact query matching customer ID
++    results = service.search("CUST-001")
++    assert len(results) == 1
++    assert results[0].id == "CUST-001"
++
++    # Case-insensitive exact matching
++    results_lower = service.search("cust-001")
++    assert len(results_lower) == 1
++    assert results_lower[0].id == "CUST-001"
++
++
++def test_search_matches_customer_id_partial() -> None:
++    """Matches query against customer ID substring in partial tier."""
++    customers = [
++        Customer(id="CUST-001", first_name="Carlos", last_name="García", email="carlos.garcia@example.com"),
++        Customer(id="CUST-002", first_name="María", last_name="Rodríguez", email="maria.r@example.com"),
++        Customer(id="USER-999", first_name="John", last_name="Doe", email="jdoe@example.com"),
++    ]
++    repo = InMemoryCustomerRepository(customers)
++    service = CustomerSearchService(repo)
++
++    # Substring match on numeric ID portion
++    results = service.search("001")
++    assert len(results) == 1
++    assert results[0].id == "CUST-001"
++
++    # Substring match on prefix portion
++    results_prefix = service.search("CUST")
++    assert len(results_prefix) == 2
++    assert {c.id for c in results_prefix} == {"CUST-001", "CUST-002"}
++
++
+ def test_search_diacritic_and_case_insensitive(sample_customers: list[Customer]) -> None:
+     """Queries match regardless of casing or diacritic differences."""
+     repo = InMemoryCustomerRepository(sample_customers)
+@@ -186,6 +227,58 @@ def test_ranking_tie_breaking_order() -> None:
+     assert [c.id for c in results_smith] == ["4", "7", "5"]
+ 
+ 
++def test_ranking_exact_id_matches_precede_partial_matches() -> None:
++    """Exact customer ID match strictly precedes partial matches."""
++    customers = [
++        Customer(id="CUST-0010", first_name="Bob", last_name="Brown", email="bob@example.com"),
++        Customer(id="CUST-001", first_name="Alice", last_name="Smith", email="alice@example.com"),
++        Customer(id="CUST-002", first_name="CUST-001-Nick", last_name="Davis", email="davis@example.com"),
++    ]
++    repo = InMemoryCustomerRepository(customers)
++    service = CustomerSearchService(repo)
++
++    # Searching "CUST-001":
++    # - Customer CUST-001: exact match on id
++    # - Customer CUST-0010: partial match on id ("CUST-001" in "CUST-0010")
++    # - Customer CUST-002: partial match on full_name ("CUST-001" in "CUST-001-Nick Davis")
++    results = service.search("CUST-001")
++    assert len(results) == 3
++    assert results[0].id == "CUST-001"  # Exact match tier
++    assert {results[1].id, results[2].id} == {"CUST-0010", "CUST-002"}  # Partial match tier
++
++
++def test_ranking_exact_name_precedes_partial_id_match() -> None:
++    """Exact name match strictly precedes partial ID match."""
++    customers = [
++        Customer(id="CUST-100", first_name="Alice", last_name="Smith", email="alice@example.com"),
++        Customer(id="OTHER-99", first_name="Cust", last_name="Jones", email="cust@example.com"),
++    ]
++    repo = InMemoryCustomerRepository(customers)
++    service = CustomerSearchService(repo)
++
++    # Searching "Cust":
++    # - OTHER-99: exact match on first_name ("Cust")
++    # - CUST-100: partial match on id ("Cust" in "CUST-100")
++    results = service.search("Cust")
++    assert len(results) == 2
++    assert results[0].id == "OTHER-99"
++    assert results[1].id == "CUST-100"
++
++
++def test_ranking_id_partial_matches_tie_breaking() -> None:
++    """Partial ID matches resolve ties by last_name, first_name, then id."""
++    customers = [
++        Customer(id="CUST-901", first_name="Zachary", last_name="Adams", email="z.adams@example.com"),
++        Customer(id="CUST-902", first_name="Abigail", last_name="Adams", email="a.adams@example.com"),
++        Customer(id="CUST-903", first_name="Bob", last_name="Baker", email="b.baker@example.com"),
++    ]
++    repo = InMemoryCustomerRepository(customers)
++    service = CustomerSearchService(repo)
++
++    results = service.search("CUST")
++    assert [c.id for c in results] == ["CUST-902", "CUST-901", "CUST-903"]
++
++
+ # ============================================================================
+ # Result Capping Tests (AC-08, SR-04, NFR-03)
+ # ============================================================================
